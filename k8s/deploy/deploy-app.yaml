@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-app
+  namespace: product
+  labels:
+    env: dev
+    app: web
+metadata:
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      env: dev
+      app: web
+  template:
+    metadata:
+      labels:
+        env: dev
+        app: web
+    spec:
+      containers:
+        - name: sample-app
+          image: ${CONTAINER_IMAGE}
+          ports:
+            - containerPort: 8080

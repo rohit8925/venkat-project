@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-app
+  namespace: product
+  labels:
+    env: dev
+    app: web
+spec:
+  selector:
+    env: dev
+    app: web
+  ports:
+  - protocol: TCP
+    port: 8080
