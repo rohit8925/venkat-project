@@ -1,0 +1,26 @@
+node{
+  def Namespace = "product"
+  def CONTAINER_IMAGE = "docker.io/sunrise172/sample-app:${env.VERSION}"
+  def Creds = "2dfd90d-a300-49ee-aaaf-0a3efcaa5279" // docker credentials in Jenkins 
+  try{
+  stage('Checkout'){
+      git 'https://github.com/Sunrise172/lbg-cs-devops.git' // CHANGE THE GIT REPO PATH
+      sh "git rev-parse --short HEAD > .git/commit-id"
+}
+
+  }
+  stage('Docker Build, Push'){
+    withDockerRegistry([credentialsId: "${Creds}", url: 'https://index.docker.io/v1/']) {
+      sh "docker build -t ${CONTAINER_IMAGE}"
+      sh "docker push ${CONTAINER_IMAGE}"
+        }
+}
+    stage('Deploy on K8s'){
+      sh "cd k8s/deploy"
+      sh "kubectl apply -f deploy-app.yaml"
+      sh "kubectl apply -f svc-app.yaml"
+    }
+     } catch (err) {
+      currentBuild.result = 'FAILURE'
+    }
+}
